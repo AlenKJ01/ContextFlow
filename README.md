@@ -13,6 +13,33 @@ and personality transformation.
 ![Architecture](screenshots/architecture.svg)
 
 ---
+```
+flowchart LR
+  subgraph UI [Frontend]
+    A[HTML / CSS / Vanilla JS]
+  end
+
+  subgraph API [Flask API]
+    B[/memory/extract\n/personality/transform/]
+  end
+
+  subgraph LLM [Gemini]
+    C[(Gemini Flash-Lite)]
+  end
+
+  subgraph Storage [Storage]
+    D[ChromaDB (vectors)]
+    E[SQLite (facts)]
+  end
+
+  A --> B
+  B --> C
+  B --> D
+  B --> E
+  C --> B
+```
+
+---
 ## 📸 Interface Preview
 
 ### **Initial Interface**
@@ -258,3 +285,4 @@ Gemini Flash Lite
 HTML, CSS, Vanilla JS
 
 Python 3.10+
+
