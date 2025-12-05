@@ -1,0 +1,513 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<title>ContextFlow</title>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+<style>
+  * {
+    font-family: 'Plus Jakarta Sans', sans-serif;
+  }
+</style>
+
+<div class="bg-blobs"></div>
+
+<style>
+  :root {
+    --bg: #e9ecf4;
+    --card: rgba(255, 255, 255, 0.6);
+    --card-gradient: linear-gradient(145deg, rgba(255,255,255,0.7), rgba(245,245,255,0.5));
+    --border: rgba(255,255,255,0.35);
+    --accent: #4f46e5;
+    --accent-hover: #4338ca;
+    --text-dark: #1f2937;
+    --text-muted: #6b7280;
+    --shadow: 0 12px 35px rgba(0,0,0,0.08);
+    --radius: 20px;
+    font-family: "Inter", system-ui, sans-serif;
+  }
+
+  body {
+    margin: 0;
+    padding: 24px;
+    background: var(--bg);
+    min-height: 100vh;
+    display: flex;
+    justify-content: center;
+    color: var(--text-dark);
+    animation: fadeIn 0.8s ease;
+  }
+
+  .container {
+    width: 100%;
+    max-width: 1280px;
+    animation: slideUp 0.6s ease;
+  }
+
+  header {
+    background: linear-gradient(135deg, #6366f1, #4f46e5);
+    padding: 28px 32px;
+    border-radius: var(--radius);
+    color: white;
+    box-shadow: 0 10px 35px rgba(79,70,229,0.3);
+    border: 1px solid rgba(255,255,255,0.15);
+    text-shadow: 0 2px 10px rgba(0,0,0,0.15);
+  }
+
+  header h1 {
+    margin: 0;
+    font-size: 28px;
+    font-weight: 650;
+    letter-spacing: -0.5px;
+  }
+
+  header p {
+    margin: 8px 0 0;
+    opacity: 0.9;
+    font-size: 15px;
+  }
+  .bg-blobs {
+    position: fixed;
+    top: 0; left: 0; right: 0; bottom: 0;
+    z-index: -1;
+    overflow: hidden;
+    filter: blur(70px);
+  }
+
+  .bg-blobs::before,
+  .bg-blobs::after {
+    content: "";
+    position: absolute;
+    border-radius: 50%;
+    width: 450px;
+    height: 450px;
+    opacity: 0.55;
+    animation: blobMove 18s infinite;
+  }
+
+  .bg-blobs::before {
+    background: #6366f1;
+    top: -120px;
+    left: -80px;
+  }
+
+  .bg-blobs::after {
+    background: #a855f7;
+    bottom: -120px;
+    right: -100px;
+    animation-delay: -6s;
+  }
+
+  @keyframes blobMove {
+    0%, 100% { transform: translate(0, 0); }
+    50% { transform: translate(60px, -40px); }
+  }
+
+  .grid {
+    margin-top: 26px;
+    display: grid;
+    gap: 26px;
+    grid-template-columns: 870px 380px;
+  }
+
+
+  /* Glass cards (enhanced) */
+  .card {
+    background: var(--card-gradient);
+    backdrop-filter: blur(20px);
+    border-radius: var(--radius);
+    border: 1px solid var(--border);
+    box-shadow: var(--shadow);
+    padding: 24px;
+    transition: transform 0.25s ease, box-shadow 0.25s ease;
+  }
+
+  .card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 20px 45px rgba(0,0,0,0.12);
+  }
+
+  .label {
+    font-size: 15px;
+    font-weight: 600;
+    margin-bottom: 6px;
+  }
+
+  /* Inputs */
+  textarea,
+  input,
+  select {
+    width: 100%;
+    padding: 14px;
+    border-radius: 14px;
+    border: 1px solid #d1d5db;
+    font-size: 15px;
+    background: #ffffffbb;
+    transition: all 0.25s;
+    box-shadow: inset 0 1px 3px rgba(0,0,0,0.05);
+  }
+
+  textarea:focus,
+  input:focus,
+  select:focus {
+    border-color: var(--accent);
+    box-shadow: 0 0 0 4px rgba(79,70,229,0.15), inset 0 1px 4px rgba(0,0,0,0.08);
+  }
+
+  /* Buttons */
+  button {
+    padding: 12px 18px;
+    border: none;
+    border-radius: 14px;
+    background: var(--accent);
+    color: white;
+    font-size: 15px;
+    cursor: pointer;
+    transition: 0.2s ease;
+    box-shadow: 0 4px 12px rgba(79,70,229,0.25);
+  }
+
+  button:hover {
+    background: var(--accent-hover);
+    transform: translateY(-2px) scale(1.02);
+    box-shadow: 0 6px 16px rgba(79,70,229,0.35);
+  }
+
+  .btn-secondary {
+    background: #a1a4ac;
+  }
+  .btn-secondary:hover {
+    background: #6b7280;
+  }
+
+  /* Output boxes */
+  .box {
+    min-height: 90px;
+    background: #ffffffdd;
+    border-radius: 14px;
+    padding: 14px;
+    border: 1px solid #e5e7eb;
+    white-space: pre-wrap;
+    overflow-y: auto;
+    font-size: 15px;
+    animation: fadeIn 0.4s ease;
+  }
+  /* ==== ALIGNMENT FIX: make inputs and boxes identical width/padding ==== */
+
+  /* Ensure all form controls and output boxes use the same box model */
+  .card textarea,
+  .card input,
+  .card select,
+  .card .box,
+  .card button {
+    box-sizing: border-box;
+  }
+
+  /* Make labels occupy full width so they don't shift content */
+  .card .label {
+    display: block;
+    width: 100%;
+    box-sizing: border-box;
+  }
+
+  /* Force consistent horizontal sizing and padding for inputs & outputs */
+  .card textarea,
+  .card input,
+  .card select,
+  .card .box {
+    width: 100%;            /* same horizontal footprint */
+    padding: 14px;         /* same internal padding */
+    border-radius: 12px;   /* consistent rounding */
+    font-size: 15px;       /* consistent text size */
+    border: 1px solid #d1d5db;
+    background: #ffffffdd;
+  }
+
+  /* Slightly smaller vertical spacing between stacked elements for crispness */
+  .card .label + textarea,
+  .card .label + input,
+  .card .label + select,
+  .card .label + .box {
+    margin-top: 8px;
+  }
+
+  /* Make buttons span only their intrinsic size but align to edges when needed */
+  .card .actions {
+    display: flex;
+    gap: 12px;
+    justify-content: flex-start;
+    align-items: center;
+  }
+
+  /* If you used grid-template-columns with fixed widths, center the pair */
+  .grid {
+    justify-content: center;
+  }
+
+  /* Mobile safety: collapse to single column below 1000px */
+  @media (max-width: 1000px) {
+    .grid { grid-template-columns: 1fr !important; }
+    .card { padding: 18px; }
+  }
+
+  /* Optional: visually emphasize identical boxes */
+  .card .box {
+    border: 1px solid #e7e9ee;
+    background: linear-gradient(180deg, rgba(255,255,255,0.9), rgba(250,250,252,0.85));
+  }
+
+
+
+  /* Animations */
+  @keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+  }
+
+  @keyframes slideUp {
+    from { transform: translateY(10px); opacity: 0; }
+    to { transform: translateY(0); opacity: 1; }
+  }
+  
+  footer {
+    margin-top: 24px;
+    font-size: 14px;
+    color: var(--text-muted);
+    text-align: center;
+  }
+
+  /* Smooth, modern dropdown */
+  select {
+    width: 100%;
+    padding: 12px 14px;
+    border-radius: 12px;
+    border: 1px solid #d3d7df;
+    background: #ffffffcc;
+    font-size: 14px;
+    outline: none;
+    appearance: none;              /* removes ugly OS arrow */
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    position: relative;
+    cursor: pointer;
+    transition: all 0.25s ease;
+
+    /* Better text rendering */
+    font-family: "Plus Jakarta Sans", sans-serif;
+  }
+
+  select:hover {
+    border-color: #c4c9d3;
+    background: #ffffffee;
+  }
+
+  select:focus {
+    border-color: var(--accent);
+    box-shadow: 0 0 0 4px rgba(79,70,229,0.18);
+    background: #fff;
+    transform: translateY(-1px);
+  }
+
+  /* custom dropdown arrow */
+  .select-wrapper {
+    position: relative;
+  }
+
+  .select-wrapper::after {
+    content: "▾";
+    font-size: 14px;
+    color: #4b5563;
+    position: absolute;
+    right: 14px;
+    top: 50%;
+    transform: translateY(-50%);
+    pointer-events: none;
+    transition: 0.2s;
+  }
+
+  .select-wrapper select:focus + .select-wrapper::after {
+    color: var(--accent);
+  }
+
+</style>
+</head>
+
+<body>
+<div class="container">
+
+  <header>
+    <h1>ContextFlow</h1>
+    <p>Extract insights from conversation history, then ask questions with customizable tone.</p>
+  </header>
+
+  <div class="grid">
+
+    <!-- LEFT CARD -->
+    <div class="card">
+      <label class="label">Memory Extraction</label>
+      <textarea id="messagesInput" placeholder="Paste the chat messages here"></textarea>
+
+      <div style="margin-top:14px; display:flex; gap:12px;">
+        <button id="extractBtn">Extract Memory</button>
+        <button id="clearBtn" class="btn-secondary">Clear</button>
+      </div>
+
+      <div class="label" style="margin-top:18px;">Preferences</div>
+      <div id="preferencesBox" class="box"></div>
+
+      <div class="label" style="margin-top:16px;">Emotional Patterns</div>
+      <div id="patternsBox" class="box"></div>
+
+      <div class="label" style="margin-top:16px;">Facts</div>
+      <div id="factsBox" class="box"></div>
+    </div>
+
+    <!-- RIGHT CARD -->
+    <div class="card">
+      <label class="label">Ask the AI</label>
+      <input id="userQuestion" type="text" placeholder="Type your question..." />
+
+      <label class="label" style="margin-top:16px;">Tone</label>
+
+      <div class="select-wrapper">
+        <select id="toneSelect">
+          <option>Calm Mentor</option>
+          <option>Witty Friend</option>
+          <option>Therapist-Style</option>
+          <option>Strict Analyst</option>
+          <option>Professional Corporate Tone</option>
+        </select>
+      </div>
+
+      <div style="margin-top:16px;">
+        <button id="generateBtn">Generate Reply</button>
+      </div>
+
+      <div class="label" style="margin-top:20px;">Before Personality</div>
+      <div id="beforeBox" class="box"></div>
+
+      <div class="label" style="margin-top:20px;">After Personality</div>
+      <div id="afterBox" class="box"></div>
+    </div>
+
+
+  </div>
+
+  <footer>
+    Powered by Gemini, ChromaDB, and Flask. Built for transparent, end-to-end conversational memory.
+  </footer>
+
+</div>
+
+<script>
+/* -------------------------- PARSE MESSAGES -------------------------- */
+function parseMessagesInput(val) {
+  try {
+    const trimmed = val.trim();
+    if (!trimmed) return [];
+    if (trimmed.startsWith("[") && trimmed.endsWith("]")) {
+      const parsed = JSON.parse(trimmed);
+      if (Array.isArray(parsed)) return parsed.map(String);
+    }
+  } catch(e){}
+
+  return val.split(/\r?\n/).map(s => s.trim()).filter(Boolean);
+}
+
+/* -------------------------- EXTRACT MEMORY -------------------------- */
+document.getElementById("extractBtn").addEventListener("click", async () => {
+  const raw = document.getElementById("messagesInput").value;
+  const messages = parseMessagesInput(raw);
+
+  if (!messages.length) {
+    alert("Please paste up to 30 messages or JSON array.");
+    return;
+  }
+
+  document.getElementById("preferencesBox").textContent = "Extracting...";
+  document.getElementById("patternsBox").textContent = "";
+  document.getElementById("factsBox").textContent = "";
+
+  try {
+    const resp = await fetch("/memory/extract", {
+      method: "POST",
+      headers: {"Content-Type":"application/json"},
+      body: JSON.stringify({messages})
+    });
+
+    const data = await resp.json();
+
+    if (!resp.ok) {
+      document.getElementById("preferencesBox").textContent =
+        "Error: " + (data.error || JSON.stringify(data));
+      return;
+    }
+
+    document.getElementById("preferencesBox").textContent =
+      (data.preferences || []).join("\n") || "(none)";
+
+    document.getElementById("patternsBox").textContent =
+      (data.emotional_patterns || []).join("\n") || "(none)";
+
+    document.getElementById("factsBox").textContent =
+      (data.facts || []).join("\n") || "(none)";
+
+  } catch (e) {
+    document.getElementById("preferencesBox").textContent =
+      "Network or server error: " + e.message;
+  }
+});
+
+/* -------------------------- GENERATE REPLY -------------------------- */
+document.getElementById("generateBtn").addEventListener("click", async () => {
+  const question = document.getElementById("userQuestion").value.trim();
+  const tone = document.getElementById("toneSelect").value;
+
+  if (!question) {
+    alert("Type a question first.");
+    return;
+  }
+
+  document.getElementById("beforeBox").textContent = "Generating...";
+  document.getElementById("afterBox").textContent = "";
+
+  const payload = { text: question, tone: tone };
+
+  try {
+    const resp = await fetch("/personality/transform", {
+      method: "POST",
+      headers: {"Content-Type":"application/json"},
+      body: JSON.stringify(payload)
+    });
+
+    const data = await resp.json();
+
+    if (!resp.ok) {
+      document.getElementById("beforeBox").textContent =
+        "Error: " + (data.error || JSON.stringify(data));
+      return;
+    }
+
+    document.getElementById("beforeBox").textContent = data.before || "(none)";
+    document.getElementById("afterBox").textContent = data.after || "(none)";
+
+  } catch (e) {
+    document.getElementById("beforeBox").textContent =
+      "Network or server error: " + e.message;
+  }
+});
+
+/* -------------------------- CLEAR -------------------------- */
+document.getElementById("clearBtn").addEventListener("click", () => {
+  document.getElementById("messagesInput").value = "";
+  document.getElementById("preferencesBox").textContent = "";
+  document.getElementById("patternsBox").textContent = "";
+  document.getElementById("factsBox").textContent = "";
+});
+</script>
+
+</body>
+</html>
