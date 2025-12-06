@@ -1,7 +1,7 @@
 # backend/memory/extractor.py
 
 import json
-from services.gemini_client import generate_text
+from backend.services.gemini_client import generate_text
 
 # NOTE: double braces {{ }} are required so .format() treats them as literal braces
 MEMORY_EXTRACTION_PROMPT = """
