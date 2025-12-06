@@ -1,9 +1,9 @@
 # backend/routes/personality_routes.py
 
 from flask import Blueprint, request, jsonify
-from services.gemini_client import generate_text
-from personality.engine import apply_tone
-from memory.storage import retrieve_memories, retrieve_facts
+from backend.services.gemini_client import generate_text
+from backend.personality.engine import apply_tone
+from backend.memory.storage import retrieve_memories, retrieve_facts
 
 personality_bp = Blueprint("personality", __name__)
 

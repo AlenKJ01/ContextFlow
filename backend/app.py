@@ -2,9 +2,9 @@
 
 import os
 from flask import Flask, render_template
-from routes.memory_routes import memory_bp
-from routes.personality_routes import personality_bp
-from routes.healthcheck import health_bp
+from backend.routes.memory_routes import memory_bp
+from backend.routes.personality_routes import personality_bp
+from backend.routes.healthcheck import health_bp
 import requests
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))

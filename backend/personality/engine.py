@@ -8,7 +8,7 @@ Supports:
 - Professional Corporate Tone
 """
 
-from services.gemini_client import generate_text
+from backend.services.gemini_client import generate_text
 
 TONE_INSTRUCTIONS = {
     "Calm Mentor": (

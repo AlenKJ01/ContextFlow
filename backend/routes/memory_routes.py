@@ -1,8 +1,8 @@
 # backend/routes/memory_routes.py
 from flask import Blueprint, request, jsonify
-from memory.extractor import extract_memories
-from memory.storage import store_preferences_patterns, store_facts
-from services.utils import validate_messages_list
+from backend.memory.extractor import extract_memories
+from backend.memory.storage import store_preferences_patterns, store_facts
+from backend.services.utils import validate_messages_list
 
 memory_bp = Blueprint("memory", __name__)
 
