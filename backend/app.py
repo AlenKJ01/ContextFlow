@@ -7,7 +7,6 @@ from routes.personality_routes import personality_bp
 from routes.healthcheck import health_bp
 import requests
 
-# Resolve project root
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
 app = Flask(
@@ -17,18 +16,16 @@ app = Flask(
 )
 
 # Register blueprints
-app.register_blueprint(health_bp, url_prefix="/health")
+app.register_blueprint(health_bp)                 # /health
 app.register_blueprint(memory_bp, url_prefix="/memory")
 app.register_blueprint(personality_bp, url_prefix="/personality")
 
-
-# Home (serve UI)
+# Home UI
 @app.route("/", methods=["GET"])
 def index():
     return render_template("index.html")
 
-
-# Debug route: list available models for your API key
+# Debug: list available models
 @app.route("/models", methods=["GET"])
 def list_models():
     key = os.environ.get("GEMINI_API_KEY")
@@ -42,9 +39,6 @@ def list_models():
     except Exception as e:
         return {"error": str(e)}, 500
 
-@app.route("/health")
-def health():
-    return "ok", 200
 
 if __name__ == "__main__":
     port = int(os.environ.get("PORT", 5000))
