@@ -79,3 +79,19 @@ def retrieve_memories(query_text, limit=5):
     conn.close()
 
     return [r[0] for r in rows]
+
+def retrieve_facts(limit=10):
+    conn = sqlite3.connect(MEMORY_DB)
+    cur = conn.cursor()
+
+    cur.execute("""
+        SELECT content
+        FROM memory
+        WHERE type = 'fact'
+        ORDER BY id DESC
+        LIMIT ?
+    """, (limit,))
+
+    rows = cur.fetchall()
+    conn.close()
+    return [r[0] for r in rows]
