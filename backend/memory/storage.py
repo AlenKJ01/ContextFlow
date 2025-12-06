@@ -59,21 +59,20 @@ def store_facts(facts):
 # ----------------------------------------------------
 # RETRIEVAL FUNCTIONS (simple LIKE search)
 # ----------------------------------------------------
-def retrieve_memories(query_text, limit=5):
+def retrieve_memories(query_text, k=5):
     if not query_text.strip():
         return []
 
     conn = sqlite3.connect(MEMORY_DB)
     cur = conn.cursor()
 
-    # Very fast, zero ML, Render-safe
     cur.execute("""
         SELECT content
         FROM memory
         WHERE content LIKE ?
         ORDER BY id DESC
         LIMIT ?
-    """, (f"%{query_text}%", limit))
+    """, (f"%{query_text}%", k))
 
     rows = cur.fetchall()
     conn.close()
