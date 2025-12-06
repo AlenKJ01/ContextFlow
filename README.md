@@ -1,45 +1,14 @@
 # ContextFlow  
 ## Extract insights from conversation history, then ask questions with customizable tone.
-ContextFlow is designed as a modular, transparent conversational intelligence stack. 
-The backend is built with Flask and organized into clear route, service, memory, and 
-personality modules. Gemini Flash Lite generates structured outputs and rewritten responses. 
-ChromaDB stores vectorized preferences and behavioral patterns, while SQLite holds factual 
-entries. The frontend is a single-page, framework-free interface (HTML + CSS + JS) that 
-visualizes every stage of the pipeline: memory extraction, storage, raw model response, 
-and personality transformation.
+ContextFlow is built as a modular, fully transparent conversational intelligence stack.
+The backend uses Flask and is cleanly separated into routing, memory processing, LLM interaction, and personality-rewriting modules.
+Gemini Flash Lite handles both structured JSON extraction and raw natural-language generation, while a compact SQLite-based memory store keeps preferences, emotional patterns, and factual details persistent across requests.
+
+The frontend is a lightweight, framework-free HTML + CSS + JavaScript single-page interface designed to clearly display each stage of the pipeline:
+memory extraction, memory storage, contextual recall, raw model reasoning, and personality-style transformation.
 
 ---
 
-![Architecture](screenshots/architecture.svg)
-
----
-```
-flowchart LR
-  subgraph UI [Frontend]
-    A[HTML / CSS / Vanilla JS]
-  end
-
-  subgraph API [Flask API]
-    B[/memory/extract\n/personality/transform/]
-  end
-
-  subgraph LLM [Gemini]
-    C[(Gemini Flash-Lite)]
-  end
-
-  subgraph Storage [Storage]
-    D[ChromaDB (vectors)]
-    E[SQLite (facts)]
-  end
-
-  A --> B
-  B --> C
-  B --> D
-  B --> E
-  C --> B
-```
-
----
 ## 📸 Interface Preview
 
 ### **Initial Interface**
@@ -54,7 +23,7 @@ Full system behavior demonstrated:
 ```bash
                          ┌─────────────────────────┐
                          │       Frontend UI       │
-                         │  HTML • CSS • Vanilla JS│
+                         │ HTML • CSS • Vanilla JS │
                          └────────────┬────────────┘
                                       │
                                       ▼
@@ -75,50 +44,51 @@ Full system behavior demonstrated:
      │   Gemini Flash Lite  │ <──────────────►│  Gemini Rewrite Call  │
      └─────────┬────────────┘                 └────────┬──────────────┘
                │                                       │
-      ┌────────┴────────┐                     ┌────────┴──────────┐
-      ▼                 ▼                     ▼                   ▼
-┌────────────────┐ ┌───────────────┐   ┌────────────────┐ ┌─────────────────────┐
-│    ChromaDB    │ │   SQLite DB   │   │  Raw Response  │ │ Personality Output  │
-│ vector storage │ │    facts.db   │   │    (before)    │ │       (after)       │
-└────────────────┘ └───────────────┘   └────────────────┘ └─────────────────────┘
+               │                              ┌────────┴──────────┐
+               ▼                              ▼                   ▼
+   ┌─────────────────────────┐      ┌────────────────┐ ┌─────────────────────┐
+   │     SQLite Memory DB    │      │  Raw Response  │ │ Personality Output  │
+   │   preferences/patterns  │      │    (before)    │ │       (after)       │
+   │         + facts         │      └────────────────┘ └─────────────────────┘
+   └─────────────────────────┘    
 ```
 ## 🧠 Overview
 
-ContextFlow showcases three core capabilities:
+ContextFlow demonstrates a fully transparent conversational intelligence pipeline built with Flask, Gemini Flash Lite, SQLite, and a lightweight HTML/CSS/JS interface. The system highlights how memory extraction, retrieval, and tone-controlled generation can work together in a modular architecture.
 
-### **1. Memory Extraction Engine**
-Users can input up to 30 chat messages.  
-The system extracts:
+### 1. Memory Extraction Engine
 
-- **User Preferences**  
-- **Emotional Patterns**  
-- **Factual Information**
+Users can paste up to 30 chat messages.
+The backend analyzes them and extracts three categories:
 
-These are stored in:
-- **ChromaDB** → preferences and emotional patterns  
-- **SQLite** → structured factual entries  
+- User Preferences
+- Emotional Patterns
+- Factual Information
 
-Extraction logic uses a strict JSON-only Gemini prompt to ensure machine-readable outputs.
+All extracted items are stored in a single SQLite-backed memory database, optimized for fast retrieval and safe deployment on services like Render. The extraction process uses a strict, JSON-only Gemini prompt to guarantee clean, structured output.
 
-### **2. Personality Transformation Engine**
-ContextFlow transforms any raw Gemini answer into one of five professional styles:
+### 2. Personality Transformation Engine
 
-- Calm Mentor  
-- Witty Friend  
-- Therapist-Style  
-- Strict Analyst  
-- Professional Corporate Tone  
+Any Gemini-generated response can be rewritten into one of five professional styles:
 
-All transformed outputs are limited to **six lines** to maintain conciseness and clarity.
+- Calm Mentor
+- Witty Friend
+- Therapist-Style
+- Strict Analyst
+- Professional Corporate Tone
 
-### **3. Transparent UI**
-All processes happen on a single page:
-- Memory extraction  
-- Storage results  
-- Raw LLM answer  
-- Tone-transformed answer  
+Every transformed answer is constrained to six lines, providing clarity, consistency, and a polished conversational tone.
 
-Nothing is hidden. Every step is visible to the user.
+### 3. Transparent Single-Page UI
+
+The interface exposes each layer of the pipeline:
+
+- Memory extraction input
+- Parsed preferences, patterns, and facts
+- Raw LLM response
+- Tone-transformed output
+
+No hidden context, no silent memory. Every step is visible to the user.
 
 ---
 
@@ -138,29 +108,30 @@ This file shows exactly how the memory engine responds to real conversational st
 ContextFlow/
 │
 ├── backend/
-│   ├── app.py                     # Main Flask entrypoint
+│   ├── app.py                     # Main Flask app
 │   ├── routes/
-│   │   ├── memory_routes.py       # extracts memories + saves to ChromaDB & SQLite
-│   │   ├── personality_routes.py  # Gemini raw answer + personality transformation
-│   │   └── healthcheck.py         # Simple alive-check endpoint for Render
+│   │   ├── memory_routes.py       # Extracts memories + stores them into SQLite memory DB
+│   │   ├── personality_routes.py  # Generates raw Gemini replies + applies tone rewriting
+│   │   └── healthcheck.py         # Simple "alive" endpoint used by Render health checks
 │   ├── memory/
-│   │   ├── extractor.py           # Logic for prompting Gemini to extract structured memory
-│   │   └── storage.py             # Interfaces for ChromaDB vector storage and SQLite facts
+│   │   ├── extractor.py           # Prompts Gemini to extract structured JSON memories
+│   │   └── storage.py             # SQLite storage + retrieval for preferences, patterns, facts
 │   ├── personality/
-│   │   └── engine.py              # Tone rewriting engine; applies selected personality rules
+│   │   └── engine.py              # Personality engine; rewrites answers into selected tone
 │   ├── services/
-│   │   ├── gemini_client.py       # Low-level Gemini API caller; handles JSON + errors
-│   │   └── utils.py               # Shared helpers: validation, formatting, small utilities
+│   │   ├── gemini_client.py       # Low-level Gemini API wrapper; handles requests + errors
+│   │   └── utils.py               # Shared helper functions for formatting and safety checks
 │   └── database/
-│       └── facts.db          
+│       └── memory.db              # Unified SQLite database storing all extracted memories
 │
 ├── templates/
-│   └── index.html                 
+│   └── index.html                
 │
-├── DEMO.md                        
+├── DEMO.md                       
 │
-├── requirements.txt                            
-└── README.md                 
+├── requirements.txt               
+└── README.md                     
+              
 
 ```
 
@@ -274,15 +245,14 @@ Output:
 ```
 ## 🧰 Tech Stack
 
-Flask
+- Flask
 
-ChromaDB
+- SQLite
 
-SQLite
+- Gemini Flash Lite
 
-Gemini Flash Lite
+- HTML, CSS, Vanilla JS
 
-HTML, CSS, Vanilla JS
+- Python 3.10+
 
-Python 3.10+
 
